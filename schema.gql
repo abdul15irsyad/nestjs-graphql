@@ -1,0 +1,63 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type User {
+  id: String!
+  name: String!
+  email: String!
+  username: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  deletedAt: DateTime
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Meta {
+  currentPage: Float!
+  totalPage: Float!
+  totalData: Float!
+  totalAllData: Float!
+}
+
+type FindAllUserObject {
+  data: [User!]
+  meta: Meta!
+}
+
+type Query {
+  root: String!
+  users(findAllUserInput: FindAllUserInput!): FindAllUserObject!
+  user(id: String!): User!
+}
+
+input FindAllUserInput {
+  page: Int!
+  limit: Int!
+  search: String!
+}
+
+type Mutation {
+  createUser(createUserInput: CreateUserInput!): User!
+  updateUser(updateUserInput: UpdateUserInput!): User!
+  removeUser(id: String!): String!
+}
+
+input CreateUserInput {
+  name: String!
+  username: String!
+  email: String!
+  password: String!
+}
+
+input UpdateUserInput {
+  name: String
+  username: String
+  email: String
+  password: String
+  id: String!
+}

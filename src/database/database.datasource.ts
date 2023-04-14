@@ -2,7 +2,7 @@ import { join } from 'path';
 import { DataSource } from 'typeorm';
 import { DB_HOST, DB_NAME, DB_PASSWORD, DB_POOL_SIZE, DB_PORT, DB_USERNAME } from './database.config';
 
-export default new DataSource({
+const datasource = new DataSource({
     type: 'postgres',
     host: DB_HOST,
     port: DB_PORT,
@@ -16,3 +16,5 @@ export default new DataSource({
     synchronize: false,
     logging: false,
 });
+
+export default datasource;

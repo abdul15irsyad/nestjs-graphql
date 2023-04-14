@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { NODE_ENV } from './app.config';
@@ -9,7 +7,9 @@ import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_USERNAME } from './database/database.config';
-import { AppResolver } from './app.resolver';
+import { UserModule } from './user/user.module';
+import { RootModule } from './root/root.module';
+import { GraphQLError } from 'graphql';
 
 @Module({
     imports: [
@@ -20,7 +20,7 @@ import { AppResolver } from './app.resolver';
         }),
         ServeStaticModule.forRoot({
             rootPath: join(__dirname, '..', 'public'),
-            renderPath: '/',
+            renderPath: '/assets',
         }),
         TypeOrmModule.forRoot({
             type: 'postgres',
@@ -31,15 +31,19 @@ import { AppResolver } from './app.resolver';
             database: DB_NAME,
             autoLoadEntities: true,
             synchronize: false,
-            logging: false,
+            logging: NODE_ENV === 'development',
         }),
         GraphQLModule.forRoot<ApolloDriverConfig>({
             driver: ApolloDriver,
             playground: NODE_ENV !== 'production',
-            autoSchemaFile: join(__dirname, 'src/schema.gql'),
+            autoSchemaFile: join(process.cwd(), 'schema.gql'),
+            useGlobalPrefix: true,
+            // formatError: (error: GraphQLError) => {
+            //     return new GraphQLError(error.message)
+            // },
         }),
+        RootModule,
+        UserModule,
     ],
-    controllers: [AppController],
-    providers: [AppService, AppResolver],
 })
 export class AppModule { }

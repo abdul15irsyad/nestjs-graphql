@@ -13,6 +13,6 @@ async function bootstrap() {
         defaultVersion: '1',
     });
 
-    await app.listen(PORT, () => logger.log(`App running on PORT=${PORT} and NODE_ENV=${NODE_ENV}`));
+    await app.listen(PORT, () => logger.log(`App running on PORT = ${PORT} and NODE_ENV = "${NODE_ENV}"`));
 }
 bootstrap();
