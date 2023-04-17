@@ -10,6 +10,7 @@ import { DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_USERNAME } from './database/
 import { UserModule } from './user/user.module';
 import { RootModule } from './root/root.module';
 import { GraphQLError } from 'graphql';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
     imports: [
@@ -44,6 +45,7 @@ import { GraphQLError } from 'graphql';
         }),
         RootModule,
         UserModule,
+        AuthModule,
     ],
 })
 export class AppModule { }

@@ -6,7 +6,7 @@ import { FindOptionsWhere, ILike, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { hashPassword } from '../global/utils/password.util';
 import { isNotEmpty } from 'class-validator';
-import { IFindAllInput } from '../global/interfaces/find-all-input.interface';
+import { FindAllInput } from '../global/interfaces/find-all-input.interface';
 
 @Injectable()
 export class UserService {
@@ -21,7 +21,7 @@ export class UserService {
         return await this.findOneBy({ id: createdUser.id });
     }
 
-    async findAll({ page = 1, limit = 10, search, orderBy, orderDir }: IFindAllInput = {}) {
+    async findAll({ page = 1, limit = 10, search, orderBy, orderDir }: FindAllInput = {}) {
         const findOptions: FindOptionsWhere<User> | FindOptionsWhere<User>[] = search && [
             { name: ILike(`%${search}%`) },
             { username: ILike(`%${search}%`) },
@@ -42,7 +42,7 @@ export class UserService {
         }
     }
 
-    async findOneBy(findOneOptions: FindOptionsWhere<User>) {
+    async findOneBy(findOneOptions: FindOptionsWhere<User> | FindOptionsWhere<User>[]) {
         return await this.userRepo.findOneBy(findOneOptions);
     }
 

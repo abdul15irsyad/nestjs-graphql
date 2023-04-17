@@ -29,22 +29,42 @@ type FindAllUserObject {
   meta: Meta!
 }
 
+type AccessToken {
+  token: String!
+  expiresIn: Float!
+  grantType: String!
+}
+
+type RefreshToken {
+  token: String!
+  expiresIn: Float!
+}
+
+type LoginObject {
+  accessToken: AccessToken!
+  refreshToken: RefreshToken!
+}
+
 type Query {
   root: String!
-  users(findAllUserInput: FindAllUserInput!): FindAllUserObject!
+  users(findAllUserInput: FindAllUserInput): FindAllUserObject!
   user(id: String!): User!
 }
 
 input FindAllUserInput {
-  page: Int!
-  limit: Int!
-  search: String!
+  page: Int = 1
+  limit: Int = 10
+  search: String
+  orderBy: String = "createdAt"
+  orderDir: String = "desc"
 }
 
 type Mutation {
   createUser(createUserInput: CreateUserInput!): User!
   updateUser(updateUserInput: UpdateUserInput!): User!
-  removeUser(id: String!): String!
+  deleteUser(id: String!): String!
+  login(loginInput: LoginInput!): LoginObject!
+  register(registerInput: RegisterInput!): User!
 }
 
 input CreateUserInput {
@@ -60,4 +80,17 @@ input UpdateUserInput {
   email: String
   password: String
   id: String!
+}
+
+input LoginInput {
+  username: String!
+  password: String!
+}
+
+input RegisterInput {
+  name: String!
+  username: String!
+  email: String!
+  password: String!
+  confirmPassword: String!
 }
