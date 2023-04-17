@@ -21,7 +21,7 @@ export class UserService {
         return await this.findOneBy({ id: createdUser.id });
     }
 
-    async findAll({ page = 1, limit = 10, search }: IFindAllInput = {}) {
+    async findAll({ page = 1, limit = 10, search, orderBy, orderDir }: IFindAllInput = {}) {
         const findOptions: FindOptionsWhere<User> | FindOptionsWhere<User>[] = search && [
             { name: ILike(`%${search}%`) },
             { username: ILike(`%${search}%`) },
@@ -33,6 +33,7 @@ export class UserService {
             where: findOptions,
             take: limit,
             skip: (page - 1) * limit,
+            order: { [orderBy]: { direction: orderDir, nulls: 'last' } }
         });
         return {
             totalPage,

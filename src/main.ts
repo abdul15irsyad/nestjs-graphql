@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { Logger, VersioningType } from '@nestjs/common';
+import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { PORT, NODE_ENV, ORIGINS } from './app.config';
 
 async function bootstrap() {
@@ -12,6 +12,10 @@ async function bootstrap() {
         type: VersioningType.URI,
         defaultVersion: '1',
     });
+    app.useGlobalPipes(new ValidationPipe({
+        stopAtFirstError: true,
+        transform: true,
+    }));
 
     await app.listen(PORT, () => logger.log(`App running on PORT = ${PORT} and NODE_ENV = "${NODE_ENV}"`));
 }
