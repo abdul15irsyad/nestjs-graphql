@@ -2,11 +2,10 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type User {
+type Role {
   id: String!
   name: String!
-  email: String!
-  username: String!
+  slug: String!
   createdAt: DateTime!
   updatedAt: DateTime!
   deletedAt: DateTime
@@ -16,6 +15,17 @@ type User {
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
 scalar DateTime
+
+type User {
+  id: String!
+  name: String!
+  email: String!
+  username: String!
+  role: Role!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  deletedAt: DateTime
+}
 
 type Meta {
   currentPage: Float!
@@ -45,13 +55,29 @@ type LoginObject {
   refreshToken: RefreshToken!
 }
 
+type FindAllRoleObject {
+  data: [Role!]
+  meta: Meta!
+}
+
 type Query {
   root: String!
   users(findAllUserInput: FindAllUserInput): FindAllUserObject!
   user(id: String!): User!
+  roles(findAllRoleInput: FindAllRoleInput): FindAllRoleObject!
+  role(id: String!): Role!
 }
 
 input FindAllUserInput {
+  page: Int = 1
+  limit: Int = 10
+  search: String
+  orderBy: String = "createdAt"
+  orderDir: String = "desc"
+  roleId: String
+}
+
+input FindAllRoleInput {
   page: Int = 1
   limit: Int = 10
   search: String
@@ -65,6 +91,9 @@ type Mutation {
   deleteUser(id: String!): String!
   login(loginInput: LoginInput!): LoginObject!
   register(registerInput: RegisterInput!): User!
+  createRole(createRoleInput: CreateRoleInput!): Role!
+  updateRole(updateRoleInput: UpdateRoleInput!): Role!
+  deleteRole(id: String!): String!
 }
 
 input CreateUserInput {
@@ -93,4 +122,13 @@ input RegisterInput {
   email: String!
   password: String!
   confirmPassword: String!
+}
+
+input CreateRoleInput {
+  name: String!
+}
+
+input UpdateRoleInput {
+  name: String
+  id: String!
 }

@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, Info } from '@nestjs/graphql';
 import { UserService } from './user.service';
 import { User } from './entities/user.entity';
 import { CreateUserInput } from './dto/create-user.input';
@@ -25,10 +25,10 @@ export class UserResolver {
 
     @Query(() => FindAllUserObject, { name: 'users' })
     async findAll(
-        @Args('findAllUserInput', { nullable: true, type: () => FindAllUserInput }) findAllUserInput: FindAllUserInput
+        @Args('findAllUserInput', { nullable: true, type: () => FindAllUserInput }) findAllUserInput: FindAllUserInput,
     ): Promise<FindAllUserObject> {
         try {
-            const { totalPage, totalAllData, data } = await this.userService.findAll(findAllUserInput)
+            const { totalPage, totalAllData, data } = await this.userService.findAll(findAllUserInput);
             return {
                 meta: {
                     currentPage: findAllUserInput?.page ?? 1,

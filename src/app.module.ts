@@ -11,6 +11,7 @@ import { UserModule } from './user/user.module';
 import { RootModule } from './root/root.module';
 import { GraphQLError } from 'graphql';
 import { AuthModule } from './auth/auth.module';
+import { RoleModule } from './role/role.module';
 
 @Module({
     imports: [
@@ -32,7 +33,7 @@ import { AuthModule } from './auth/auth.module';
             database: DB_NAME,
             autoLoadEntities: true,
             synchronize: false,
-            logging: NODE_ENV === 'development',
+            logging: false,
         }),
         GraphQLModule.forRoot<ApolloDriverConfig>({
             driver: ApolloDriver,
@@ -46,6 +47,7 @@ import { AuthModule } from './auth/auth.module';
         RootModule,
         UserModule,
         AuthModule,
+        RoleModule,
     ],
 })
 export class AppModule { }

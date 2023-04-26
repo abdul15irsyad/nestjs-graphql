@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsWhere, ILike, Repository } from 'typeorm';
+import { FindOneOptions, FindOptionsWhere, ILike, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { hashPassword } from '../global/utils/password.util';
 import { isNotEmpty } from 'class-validator';
-import { FindAllInput } from '../global/interfaces/find-all-input.interface';
+import { FindAllUserOptions } from './interfaces/find-all-user-options.interface';
 
 @Injectable()
 export class UserService {
@@ -21,19 +21,25 @@ export class UserService {
         return await this.findOneBy({ id: createdUser.id });
     }
 
-    async findAll({ page = 1, limit = 10, search, orderBy, orderDir }: FindAllInput = {}) {
-        const findOptions: FindOptionsWhere<User> | FindOptionsWhere<User>[] = search && [
-            { name: ILike(`%${search}%`) },
-            { username: ILike(`%${search}%`) },
-            { email: ILike(`%${search}%`) },
-        ];
-        const totalAllData = await this.userRepo.countBy(findOptions);
+    async findAll({ page = 1, limit = 10, search, orderBy, orderDir, roleId }: FindAllUserOptions = {}) {
+        const filter = {
+            roleId: roleId ?? undefined,
+        };
+        const findOptionsWhere: FindOptionsWhere<User> | FindOptionsWhere<User>[] = search ? [
+            { name: ILike(`%${search}%`), ...filter },
+            { username: ILike(`%${search}%`), ...filter },
+            { email: ILike(`%${search}%`), ...filter },
+        ] : filter;
+        const totalAllData = await this.userRepo.countBy(findOptionsWhere);
         const totalPage = Math.ceil(totalAllData / limit);
         const data = await this.userRepo.find({
-            where: findOptions,
+            where: findOptionsWhere,
             take: limit,
             skip: (page - 1) * limit,
-            order: { [orderBy]: { direction: orderDir, nulls: 'last' } }
+            order: { [orderBy]: { direction: orderDir, nulls: 'last' } },
+            relations: {
+                role: true
+            }
         });
         return {
             totalPage,
@@ -42,8 +48,22 @@ export class UserService {
         }
     }
 
-    async findOneBy(findOneOptions: FindOptionsWhere<User> | FindOptionsWhere<User>[]) {
-        return await this.userRepo.findOneBy(findOneOptions);
+    async findOne(findOneOptions: FindOneOptions<User>) {
+        return await this.userRepo.findOne({
+            relations: {
+                role: true,
+            },
+            ...findOneOptions,
+        });
+    }
+
+    async findOneBy(findOptionsWhere: FindOptionsWhere<User> | FindOptionsWhere<User>[]) {
+        return await this.userRepo.findOne({
+            where: findOptionsWhere,
+            relations: {
+                role: true,
+            }
+        });
     }
 
     async update(id: string, updateUserInput: UpdateUserInput) {

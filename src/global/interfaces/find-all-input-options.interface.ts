@@ -1,4 +1,4 @@
-export interface FindAllInput {
+export interface FindAllInputOptions {
     page?: number,
     limit?: number,
     search?: string,
