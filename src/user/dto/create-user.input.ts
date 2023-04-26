@@ -1,5 +1,5 @@
 import { InputType, Int, Field } from '@nestjs/graphql';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
 
 @InputType()
 export class CreateUserInput {
@@ -22,4 +22,10 @@ export class CreateUserInput {
     @IsString()
     @IsNotEmpty()
     password: string;
+
+    @Field(() => String!)
+    @IsUUID()
+    @IsString()
+    @IsNotEmpty()
+    roleId: string;
 }

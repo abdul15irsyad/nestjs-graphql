@@ -5,6 +5,7 @@ import { CreateRoleInput } from './dto/create-role.input';
 import { UpdateRoleInput } from './dto/update-role.input';
 import { Role } from './entities/role.entity';
 import { FindAllRoleOptions } from './interfaces/find-all-role-options.interface';
+import slugify from 'slugify';
 
 @Injectable()
 export class RoleService {
@@ -12,7 +13,10 @@ export class RoleService {
     private roleRepo: Repository<Role>;
 
     async create(createRoleInput: CreateRoleInput) {
-        const createdRole = await this.roleRepo.save(createRoleInput);
+        const createdRole = await this.roleRepo.save({
+            ...createRoleInput,
+            slug: slugify(createRoleInput.name, { lower: true, strict: true }),
+        });
         return await this.findOneBy({ id: createdRole.id });
     }
 
@@ -50,6 +54,7 @@ export class RoleService {
         const updatedRole = await this.roleRepo.save({
             id,
             ...updateRoleInput,
+            slug: slugify(updateRoleInput.name, { lower: true, strict: true }),
         });
         return await this.findOneBy({ id: updatedRole.id });
     }

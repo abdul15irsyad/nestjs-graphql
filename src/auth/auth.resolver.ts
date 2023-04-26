@@ -10,11 +10,14 @@ import { compareSync } from 'bcrypt';
 import { User } from '../user/entities/user.entity';
 import { ACCESS_TOKEN_EXPIRED, REFRESH_TOKEN_EXPIRED } from './auth.config';
 import { RegisterInput } from './dto/register.dto';
+import { RoleService } from '../role/role.service';
 
 @Resolver()
 export class AuthResolver {
     @Inject(UserService)
     private userService: UserService;
+    @Inject(RoleService)
+    private roleService: RoleService;
     @Inject(JwtService)
     private jwtService: JwtService;
 
@@ -56,7 +59,11 @@ export class AuthResolver {
     @Mutation(() => User)
     async register(@Args('registerInput', { type: () => RegisterInput }) registerInput: RegisterInput) {
         try {
-            const newUser = await this.userService.create(registerInput);
+            const roleUser = await this.roleService.findOneBy({ slug: 'user' });
+            const newUser = await this.userService.create({
+                ...registerInput,
+                roleId: roleUser.id
+            });
             return newUser;
         } catch (error) {
             handleError(error);
