@@ -16,6 +16,20 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type File {
+  id: String!
+  path: String!
+  filename: String!
+  file: String!
+  originalFilename: String!
+  mime: String!
+  userId: String
+  user: User
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  deletedAt: DateTime
+}
+
 type User {
   id: String!
   name: String!
@@ -50,22 +64,39 @@ type RefreshToken {
   expiresIn: Float!
 }
 
-type LoginObject {
-  accessToken: AccessToken!
-  refreshToken: RefreshToken!
-}
-
 type FindAllRoleObject {
   data: [Role!]
   meta: Meta!
 }
 
+type FindAllFileObject {
+  data: [File!]
+  meta: Meta!
+}
+
 type Query {
-  root: String!
-  users(findAllUserInput: FindAllUserInput): FindAllUserObject!
-  user(id: String!): User!
+  files(findAllFileInput: FindAllFileInput): FindAllFileObject!
+  file(id: String!): File!
   roles(findAllRoleInput: FindAllRoleInput): FindAllRoleObject!
   role(id: String!): Role!
+  users(findAllUserInput: FindAllUserInput): FindAllUserObject!
+  user(id: String!): User!
+}
+
+input FindAllFileInput {
+  page: Int = 1
+  limit: Int = 10
+  search: String
+  orderBy: String = "createdAt"
+  orderDir: String = "desc"
+}
+
+input FindAllRoleInput {
+  page: Int = 1
+  limit: Int = 10
+  search: String
+  orderBy: String = "createdAt"
+  orderDir: String = "desc"
 }
 
 input FindAllUserInput {
@@ -77,23 +108,31 @@ input FindAllUserInput {
   roleId: String
 }
 
-input FindAllRoleInput {
-  page: Int = 1
-  limit: Int = 10
-  search: String
-  orderBy: String = "createdAt"
-  orderDir: String = "desc"
-}
-
 type Mutation {
-  createUser(createUserInput: CreateUserInput!): User!
-  updateUser(updateUserInput: UpdateUserInput!): User!
-  deleteUser(id: String!): String!
-  login(loginInput: LoginInput!): LoginObject!
-  register(registerInput: RegisterInput!): User!
+  createFile(createFileInput: CreateFileInput!): File!
+  removeFile(id: String!): File!
   createRole(createRoleInput: CreateRoleInput!): Role!
   updateRole(updateRoleInput: UpdateRoleInput!): Role!
   deleteRole(id: String!): String!
+  createUser(createUserInput: CreateUserInput!): User!
+  updateUser(updateUserInput: UpdateUserInput!): User!
+  deleteUser(id: String!): String!
+}
+
+input CreateFileInput {
+  file: Upload!
+}
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
+input CreateRoleInput {
+  name: String!
+}
+
+input UpdateRoleInput {
+  name: String
+  id: String!
 }
 
 input CreateUserInput {
@@ -110,27 +149,5 @@ input UpdateUserInput {
   email: String
   password: String
   roleId: String
-  id: String!
-}
-
-input LoginInput {
-  username: String!
-  password: String!
-}
-
-input RegisterInput {
-  name: String!
-  username: String!
-  email: String!
-  password: String!
-  confirmPassword: String!
-}
-
-input CreateRoleInput {
-  name: String!
-}
-
-input UpdateRoleInput {
-  name: String
   id: String!
 }

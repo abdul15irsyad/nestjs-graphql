@@ -12,6 +12,8 @@ import { RootModule } from './root/root.module';
 import { GraphQLError } from 'graphql';
 import { AuthModule } from './auth/auth.module';
 import { RoleModule } from './role/role.module';
+import { FileModule } from './file/file.module';
+import { GraphQLUpload } from 'graphql-upload-ts';
 
 @Module({
     imports: [
@@ -22,7 +24,6 @@ import { RoleModule } from './role/role.module';
         }),
         ServeStaticModule.forRoot({
             rootPath: join(__dirname, '..', 'public'),
-            renderPath: '/assets',
         }),
         TypeOrmModule.forRoot({
             type: 'postgres',
@@ -40,6 +41,13 @@ import { RoleModule } from './role/role.module';
             playground: NODE_ENV !== 'production',
             autoSchemaFile: join(process.cwd(), 'schema.gql'),
             useGlobalPrefix: true,
+            include: [
+                UserModule,
+                RoleModule,
+                FileModule
+            ],
+            csrfPrevention: false,
+            introspection: true,
             // formatError: (error: GraphQLError) => {
             //     return new GraphQLError(error.message)
             // },
@@ -48,6 +56,7 @@ import { RoleModule } from './role/role.module';
         UserModule,
         AuthModule,
         RoleModule,
+        FileModule,
     ],
 })
 export class AppModule { }

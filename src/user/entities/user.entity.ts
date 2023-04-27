@@ -1,6 +1,7 @@
 import { ObjectType, Field } from '@nestjs/graphql';
 import { Role } from '../../role/entities/role.entity';
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { File } from '../../file/entities/file.entity';
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity({ name: 'users' })
 @ObjectType()
@@ -39,6 +40,10 @@ export class User {
     @ManyToOne(() => Role, (role: Role) => role.users)
     @JoinColumn({ name: 'role_id' })
     role: Role;
+
+    // @Field(() => [File])
+    @OneToMany(() => File, (file: File) => file.user)
+    files: File[];
 
     @Field(() => Date)
     @CreateDateColumn({ name: 'created_at' })
