@@ -16,14 +16,12 @@ export class FileResolver {
     @Mutation(() => File, { name: 'createFile' })
     async create(@Args('createFileInput') createFileInput: CreateFileInput) {
         try {
-            const filename = dayjs().valueOf();
-            const { createReadStream, filename: originalFilename, mimetype } = await createFileInput.file;
-            await this.fileService.moveFileToUploadFolder(createReadStream);
+            const { originalFilename, mime, filename } = await this.fileService.moveFileToUploadFolder(await createFileInput.file);
             return await this.fileService.create({
                 path: 'uploads',
-                filename: `${filename}.png`,
+                filename: filename,
                 originalFilename,
-                mime: mimetype,
+                mime,
             });
         } catch (error) {
             handleError(error);

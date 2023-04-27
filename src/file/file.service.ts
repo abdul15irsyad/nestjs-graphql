@@ -3,10 +3,13 @@ import { File } from './entities/file.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, FindOptionsWhere, ILike, FindOneOptions, DeepPartial } from 'typeorm';
 import { FindAllFileOptions } from './interfaces/find-all-file-options.interface';
-import { ReadStream, createWriteStream, readFileSync } from 'fs';
+import { createWriteStream, readFileSync } from 'fs';
 import { join } from 'path';
 import { UPLOAD_PATH } from './file.config';
 import dayjs from 'dayjs';
+import { FileUpload } from 'graphql-upload-ts';
+import * as mime from 'mime-types';
+import { isNotEmpty } from 'class-validator';
 
 @Injectable()
 export class FileService {
@@ -20,10 +23,17 @@ export class FileService {
         return await this.findOneBy({ id: createdFile.id });
     }
 
-    async moveFileToUploadFolder(createReadStream: () => ReadStream, filename?: string) {
+    async moveFileToUploadFolder(fileUpload: FileUpload, filename?: string) {
         try {
-            return new Promise<{ file: Buffer, filename: string }>(async (resolve) => {
-                filename = filename ?? `${dayjs().valueOf()}`;
+            return new Promise<{
+                file: Buffer,
+                filename: string,
+                originalFilename: string,
+                mime: string,
+            }>(async (resolve) => {
+                const { createReadStream, mimetype, filename: originalFilename } = fileUpload;
+                const ext = mime.extension(mimetype);
+                filename = isNotEmpty(filename) ? `${filename}.${ext}` : `${dayjs().valueOf()}.${ext}`;
                 const path = `${UPLOAD_PATH}/${filename}`;
                 createReadStream()
                     .pipe(createWriteStream(join(process.cwd(), path)))
@@ -31,6 +41,8 @@ export class FileService {
                         return resolve({
                             file: readFileSync(path),
                             filename,
+                            originalFilename,
+                            mime: mimetype
                         });
                     })
                     .on('error', () => {
